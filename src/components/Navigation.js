@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom'
 import React from 'react'
 
 // styles & images
-import './Navbar.css'
+import './Navigation.css'
 import StormWall from '../assets/stormwall-logo.svg'
 
-export default function Navbar() {
+export default function Navigation() {
   return (
     <div className="navbar">
-      <ul className="logo">
-        <li>
+      <ul>
+        <li className="logo">
             <img src={StormWall} alt="stormwall logo" />
             <span>StormWall</span>
         </li>
