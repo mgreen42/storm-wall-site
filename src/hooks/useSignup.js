@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { projectAuth, projectStorage, projectFirestore } from '../firebase/config'
+import { projectAuth, projectStorage, db } from '../firebase/config'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { useAuthContext } from './useAuthContext'
 
 export const useSignup = () => {
@@ -14,7 +15,7 @@ export const useSignup = () => {
   
     try {
       // signup
-      const res = await projectAuth.createUserWithEmailAndPassword(email, password)
+      const res = await createUserWithEmailAndPassword(projectAuth, email, password)
 
       if (!res) {
         throw new Error('Could not complete signup')
@@ -29,7 +30,7 @@ export const useSignup = () => {
       await res.user.updateProfile({ displayName, photoURL: imgURL })
 
       // create user document
-      await projectFirestore.collection('users').doc(res.user.uid).set({
+      await db.collection('users').doc(res.user.uid).set({
         online: true,
         displayName,
         photoURL: imgURL

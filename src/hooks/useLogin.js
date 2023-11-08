@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { projectAuth, projectFirestore } from '../firebase/config'
+import { projectAuth, db } from '../firebase/config'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useAuthContext } from './useAuthContext'
 
 export const useLogin = () => {
@@ -14,10 +15,10 @@ export const useLogin = () => {
   
     try {
       // login
-      const res = await projectAuth.signInWithEmailAndPassword(email, password)
+      const res = await signInWithEmailAndPassword(projectAuth, email, password)
 
       // set status as online
-      await projectFirestore.collection('users').doc(res.user.uid).update({
+      await db.collection('users').doc(res.user.uid).update({
             online: true
         })
 

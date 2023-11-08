@@ -1,9 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Select from 'react-select'
 import { useCollection } from '../../hooks/useCollection'
-import { useEffect } from 'react'
-import { timestamp } from '../../firebase/config'
-import { useFirestore } from '../../hooks/useFirestore'
+import { db, timestamp } from '../../firebase/config'
+import { collection, setDoc } from 'firebase/firestore'
 import { useAuthContext } from '../../hooks/useAuthContext'
 import { useNavigate } from 'react-router-dom'
 
@@ -20,7 +19,6 @@ const categories = [
 
 export default function Create() {
     const navigate = useNavigate()
-    const { addDocument, response } = useFirestore('projects')
     const { documents } = useCollection('users')
     const { user } = useAuthContext()
     const [users, setUsers] = useState([])
@@ -46,22 +44,25 @@ export default function Create() {
         e.preventDefault()
         setFormError(null)
 
+        // error: no category selected
         if(!category) {
             setFormError('Please select a project category')
             return
         }
-
+        // error: no assigned users
         if(assignedUsers.length < 1) {
             setFormError('Please assign the project to at least one user')
             return
         }
 
+        // create user object for Project
         const createdBy = {
             displayName: user.displayName,
             photoURL: user.photoURL,
             id: user.uid
         }
 
+        // get assigned users info
         const assignedUsersList = assignedUsers.map((u) => {
             return {
                 displayName: u.value.displayName,
@@ -80,10 +81,8 @@ export default function Create() {
             assignedUsersList
         }
 
-        await addDocument(project)
-        if(!response.error) {
+        await setDoc(collection(db, 'projects'), project)
             navigate('/')
-        }
     } // end handle submission
 
     // return Create page

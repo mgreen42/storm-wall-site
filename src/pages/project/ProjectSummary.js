@@ -1,16 +1,18 @@
 import Avatar from '../../components/Avatar'
-import { useFirestore } from '../../hooks/useFirestore'
+import { doc, deleteDoc } from 'firebase/firestore'
+import { db } from '../../firebase/config'
 import { useAuthContext } from '../../hooks/useAuthContext'
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 
 export default function ProjectSummary({ project }) {
-    const { deleteDocument } = useFirestore('projects')
     const { user } = useAuthContext()
+    const [newUpdate, setNewUpdate] = useState()
     const navigate = useNavigate()
 
     // delete document 
     const handleClick = (e) => {
-        deleteDocument(project.id)
+        deleteDoc(doc(db, 'projects', project.id))
         navigate('/')
     }
 
@@ -34,6 +36,17 @@ export default function ProjectSummary({ project }) {
                     ))}
                 </div>
             </div>
+            {/* <form className="add-comment" onSubmit={handleSubmit}>
+            <label>
+                <span>Add new comment:</span>
+                <textarea
+                    required
+                    onChange={(e) => setNewComment(e.target.value)}
+                    value={newComment}
+                ></textarea>
+            </label>
+            <button className="btn">Add Comment</button>
+        </form> */}
             {project.createdBy.id === user.uid &&(
                 <button className='btn' onClick={handleClick}>Mark as Complete</button>
             )}
